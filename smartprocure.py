@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
-#import plotly.express as px
-#from openai import OpenAI
+import plotly.express as px
+from openai import OpenAI
 
 client = OpenAI(api_key=["sk-abcdef1234567890abcdef1234567890abcdef12"])  # For Streamlit Cloud
 
