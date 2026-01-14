@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 
 st.set_page_config(page_title="SmartProcure AI", layout="wide")
 st.title("🤖 SmartProcure AI – Autonomous Strategic Sourcing Platform")
@@ -37,13 +36,12 @@ st.header("1️⃣ Supplier Data Lake")
 
 data_source = st.radio("Select Data Source", ["Upload CSV", "Use Demo Dataset"])
 
-df = None  # Initialize to avoid NameError
+df = None
 
 if data_source == "Upload CSV":
     uploaded_file = st.file_uploader("Upload Supplier KPI Dataset (CSV)", type=["csv"])
     if uploaded_file:
         df = pd.read_csv(uploaded_file)
-
 else:
     df = pd.DataFrame({
         "Supplier": ["Alpha Ltd", "Beta Corp", "Gamma Inc", "Delta Pvt"],
@@ -53,9 +51,7 @@ else:
         "Risk": [0.15, 0.25, 0.18, 0.30]
     })
 
-# Proceed only if df exists
 if df is not None:
-
     st.subheader("📂 Supplier Data Lake")
     st.dataframe(df)
 
@@ -80,7 +76,7 @@ if df is not None:
     st.dataframe(ranked_df)
 
     # -------------------------
-    # 3. Executive Dashboard
+    # 3. Executive Dashboard (No Plotly)
     # -------------------------
     st.header("📊 Executive Procurement Dashboard")
 
@@ -90,12 +86,11 @@ if df is not None:
     col3.metric("Avg Delivery", round(df["Delivery"].mean(), 2))
     col4.metric("Avg Risk", round(df["Risk"].mean(), 2))
 
-    fig_score = px.bar(ranked_df, x="Supplier", y="Score", title="Supplier Performance Score")
-    st.plotly_chart(fig_score, use_container_width=True)
+    st.subheader("Supplier Performance Score")
+    st.bar_chart(ranked_df.set_index("Supplier")["Score"])
 
-    fig_risk = px.scatter(ranked_df, x="Cost", y="Risk", size="Score", color="Supplier",
-                          title="Cost vs Risk Portfolio")
-    st.plotly_chart(fig_risk, use_container_width=True)
+    st.subheader("Cost vs Risk Portfolio")
+    st.scatter_chart(ranked_df, x="Cost", y="Risk")
 
     # -------------------------
     # 4. Risk Forecast
@@ -114,9 +109,8 @@ if df is not None:
     ranked_df["Allocation"] = (ranked_df["Score"] / ranked_df["Score"].sum()) * total_demand
     st.dataframe(ranked_df[["Supplier", "Allocation"]])
 
-    fig_alloc = px.pie(ranked_df, names="Supplier", values="Allocation",
-                       title="AI-Based Order Allocation")
-    st.plotly_chart(fig_alloc, use_container_width=True)
+    st.subheader("Allocation Distribution")
+    st.bar_chart(ranked_df.set_index("Supplier")["Allocation"])
 
     # -------------------------
     # 6. Negotiation Agent
